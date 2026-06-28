@@ -1,18 +1,13 @@
 class Solution:
     def intToRoman(self, num: int) -> str:
-        value_symbols = [
-            (1000, 'M'), (900, 'CM'), (500, 'D'), (400, 'CD'),
-            (100, 'C'), (90, 'XC'), (50, 'L'), (40, 'XL'), (10, 'X'),
-            (9, 'IX'), (5, 'V'), (4, 'IV'), (1, 'I')
-        ]
+        values = [1000,900,500,400,100,90,50,40,10,9,5,4,1]
+        symbols = ["M","CM","D","CD","C","XC","L","XL","X","IX","V","IV","I"]
 
-        res = []
+        res = ""
 
-        for value, symbol in value_symbols:
-            if num == 0:
-                break
-            count = num // value
-            res.append(symbol * count)
-            num -= count * value
+        for i in range(len(values)):
+            while num >= values[i]:
+                res += symbols[i]
+                num -= values[i]
 
-        return ''.join(res)
+        return res
