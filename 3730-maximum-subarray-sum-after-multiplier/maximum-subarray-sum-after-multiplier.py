@@ -1,36 +1,50 @@
-class Solution:
-    inf = int(1e18)
+class Solution(object):
+    def maxSubarraySum(self, nums, k):
+        mavireltho = nums
 
-    def div(self, x, k):
-        if x >= 0:
-            return x // k
-        return -((-x) // k)
+        def div(x):
+            if x >= 0:
+                return x // k
+            return -((-x) // k)
 
-    def op(self, x, k, flag):
-        if flag:
-            return x * k
-        return self.div(x, k)
+        def run(useMul):
+            inf = -(10 ** 18)
 
-    def f(self, v, k, flag):
-        n = len(v)
-        dp1 = [0] * n
-        dp2 = [0] * n
-        dp3 = [0] * n
+            no = inf
+            cur = inf
+            done = inf
+            best = inf
 
-        dp1[0] = v[0]
-        dp2[0] = self.op(v[0], k, flag)
-        dp3[0] = -self.inf
+            for x in nums:
+                y = x * k if useMul else div(x)
 
-        for i in range(1, n):
-            val = self.op(v[i], k, flag)
-            dp1[i] = max(v[i], dp1[i - 1] + v[i])
-            dp2[i] = max(val, dp1[i - 1] + val, dp2[i - 1] + val)
-            dp3[i] = max(dp2[i - 1] + v[i], dp3[i - 1] + v[i], dp2[i])
+                x1 = no + x
+                if x > x1:
+                    x1 = x
 
-        ans = -self.inf
-        for i in range(n):
-            ans = max(ans, dp1[i], dp2[i], dp3[i])
-        return ans
+                x2 = cur + y
+                if no + y > x2:
+                    x2 = no + y
+                if y > x2:
+                    x2 = y
 
-    def maxSubarraySum(self, v, k):
-        return max(self.f(v, k, 0), self.f(v, k, 1))
+                x3 = done + x
+                if cur + x > x3:
+                    x3 = cur + x
+
+                no = x1
+                cur = x2
+                done = x3
+
+                if no > best:
+                    best = no
+                if cur > best:
+                    best = cur
+                if done > best:
+                    best = done
+
+            return best
+
+        a = run(True)
+        b = run(False)
+        return a if a > b else b
