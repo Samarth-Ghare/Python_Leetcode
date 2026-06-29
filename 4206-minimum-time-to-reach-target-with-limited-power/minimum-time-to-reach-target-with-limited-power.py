@@ -1,38 +1,21 @@
-import heapq
-from typing import List
-
 class Solution:
-    def minTimeMaxPower(self, n: int, edges: List[List[int]], p: int,
-                        cost: List[int], s: int, t: int) -> List[int]:
-        inf = float('inf')
+    def minTimeMaxPower(self, n: int, edges: List[List[int]], power: int, cost: List[int], source: int, target: int) -> List[int]:
         adj = [[] for _ in range(n)]
-        for u, v, w in edges:
-            adj[u].append((v, w))
-        ans = [-1, -1]
-        dist = [[inf] * (p + 1) for _ in range(n)]
-        dist[s][p] = 0
-        # priority queue stores (time, node, remaining power)
-        pq = [(0, s, p)]
-        best, bestp = -1, -1
+        for u, v, t in edges:
+            adj[u].append((v,t))
+        max_p = [-1] *n
+        pq = [(0, -power, source)]
         while pq:
-            time, u, remp = heapq.heappop(pq)
-            if time != dist[u][remp]:
+            t, neg_p, u = heapq.heappop(pq)
+            p = -neg_p
+            if u == target:
+                return [t, p]
+            if p <=max_p[u]:
                 continue
-            if best != -1 and time > best:
-                break
-            if u == t:
-                if best == -1:
-                    best = time
-                bestp = max(remp, bestp)
-                continue
-            if remp < cost[u]:
-                continue
-            nxtp = remp - cost[u]
-            for v, w in adj[u]:
-                ntime = time + w
-                if ntime < dist[v][nxtp]:
-                    dist[v][nxtp] = ntime
-                    heapq.heappush(pq, (ntime, v, nxtp))
-        ans[0] = best
-        ans[1] = bestp
-        return ans
+            max_p[u] = p
+            if p >= cost[u]:
+                next_p = p-cost[u]
+                for v, weight in adj[u]:
+                    if next_p > max_p[v]:
+                        heapq.heappush(pq, (t+weight, -next_p, v))
+        return [-1, -1]
