@@ -1,17 +1,11 @@
 class Solution:
-    def readBinaryWatch(self, k: int) -> List[str]:
-        if k == 0:
-            return ['0:00']
-        mask = (1 << 6) - 1
-        q = (1 << k) - 1
-        limit = q << (10 - k)
-        res = []
-        while q <= limit:
-            min = q & mask
-            hour = q >> 6
-            if hour < 12 and min < 60:
-                res.append(f'{hour}:{min:0>2}')
-            r = q & -q
-            n = q + r 
-            q = (((q ^ n) // r) >> 2) | n
-        return res
+    def readBinaryWatch(self, turnedOn: int) -> List[str]:
+        if turnedOn > 8: return []
+        ans = []
+        
+        for hour in range(12):
+            for minute in range(60):
+                if hour.bit_count() + minute.bit_count() == turnedOn:
+                    ans.append(f"{hour}:{minute:02d}")
+
+        return ans
