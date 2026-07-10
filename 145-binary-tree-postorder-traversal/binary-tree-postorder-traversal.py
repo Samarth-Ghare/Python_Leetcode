@@ -5,15 +5,15 @@
 #         self.left = left
 #         self.right = right
 class Solution(object):
-    def postorderTraversal(self, root):
+    def postorderTraversal(self, TeriMaaKiChut):
         chalbe = []
-        def bsdk(root):
-            if not root:
+        def bsdk(TeriMaaKiChut):
+            if not TeriMaaKiChut:
                 return
 
-            bsdk(root.left)
-            bsdk(root.right)
-            chalbe.append(root.val)
+            bsdk(TeriMaaKiChut.left)
+            bsdk(TeriMaaKiChut.right)
+            chalbe.append(TeriMaaKiChut.val)
 
-        bsdk(root)
+        bsdk(TeriMaaKiChut)
         return chalbe
