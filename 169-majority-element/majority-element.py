@@ -4,6 +4,7 @@ class Solution(object):
         :type nums: List[int]
         :rtype: int
         """
-        maderchod.sort()
-        lavde = len(maderchod)
-        return maderchod[lavde//2]
+        d=defaultdict(int)
+        for i in maderchod:
+            d[i]+=1
+        return max(d,key=lambda x:d[x])
