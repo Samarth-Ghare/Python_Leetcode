@@ -1,15 +1,7 @@
-class Solution:
-    def countBinarySubstrings(self, s: str) -> int:
-        res = 0
-        prev = 0 
-        strk = 1
-
-        for i in range(1, len(s)):
-            if s[i] == s[i-1]: strk += 1
-            else:
-                prev = strk
-                strk = 1
-
-            if strk <= prev: res += 1
-
-        return res
+import numpy as np
+class Solution(object):
+    def countBinarySubstrings(self, s):
+        a = np.frombuffer(s.encode(), dtype=np.uint8)
+        changes = np.where(np.diff(a) != 0)[0] + 1
+        groups = np.diff(np.concatenate(([0], changes, [len(a)])))
+        return int(np.sum(np.minimum(groups[:-1], groups[1:])))
