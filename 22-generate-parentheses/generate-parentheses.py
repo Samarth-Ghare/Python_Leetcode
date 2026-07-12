@@ -1,17 +1,22 @@
 class Solution:
+    def fun(self,open,close,n,tmp,res):
+        if open==n and close==n:
+            res.append("".join(tmp))
+            return
+        if open<n:
+            tmp.append('(')
+            self.fun(open+1,close,n,tmp,res)
+            tmp.pop()
+        if close<open:
+            tmp.append(')')
+            self.fun(open,close+1,n,tmp,res)
+            tmp.pop()
+        return 
+
     def generateParenthesis(self, n: int) -> List[str]:
-        res = []
-        def dfs(openP, closeP, s):
-            if openP == closeP and openP + closeP == n * 2:
-                res.append(s)
-                return
-
-            if openP < n:
-                dfs(openP + 1, closeP, s + "(")
-
-            if closeP<openP:
-                dfs(openP, closeP + 1, s + ")")
-
-        dfs(0,0,"")
-
+        res=[]
+        tmp=[]
+        self.fun(0,0,n,tmp,res)
         return res
+
+        
