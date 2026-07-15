@@ -1,6 +1,8 @@
 class Solution:
     def reverseBits(self, n: int) -> int:
-        binary = bin(n)[2:]
-        if len(binary) <= 32:
-            binary = '0' * (32 - len(binary)) + binary
-        return int(binary[::-1], 2)
+        ans = 0
+        for _ in range(32):
+            bit = n & 1
+            ans = (ans << 1) | bit
+            n>>=1
+        return ans
