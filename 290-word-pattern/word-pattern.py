@@ -1,20 +1,19 @@
 class Solution:
-    def wordPattern(self, p: str, s: str) -> bool:
-        p = list(p)
-        s = s.split(' ')
-
-        if len(p) != len(s):
+    def wordPattern(self, pattern, s):
+        words = s.split()
+        if len(pattern) != len(words):
             return False
-
-        h = {}
-
-        for i in range(len(p)):
-            if p[i] in h and s[i] != h[p[i]]:
-                return False
-            elif p[i] not in h and s[i] in h.values():
-                return False
+        p_to_w = {}
+        w_to_p = {}
+        for p, w in zip(pattern, words):
+            if p in p_to_w:
+                if p_to_w[p] != w:
+                    return False
             else:
-                h[p[i]] = s[i]
-
-
+                p_to_w[p] = w
+            if w in w_to_p:
+                if w_to_p[w] != p:
+                    return False
+            else:
+                w_to_p[w] = p
         return True
