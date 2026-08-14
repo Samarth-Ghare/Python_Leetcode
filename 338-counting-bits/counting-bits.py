@@ -1,12 +1,9 @@
 class Solution:
     def countBits(self, n: int) -> List[int]:
-        dp = [0] * (n + 1)
-        sub = 1
-
-        for i in range(1, n + 1):
-            if sub * 2 == i:
-                sub = i
-
-            dp[i] = dp[i - sub] + 1
-
-        return dp
+        ans, bits = [0,1,1,2], [1,2]
+        
+        while len(ans) < n+1:
+            bits = bits + [1 + v for v in bits]
+            ans.extend(bits)
+        
+        return ans[:n+1]
