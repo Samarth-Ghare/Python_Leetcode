@@ -1,3 +1,9 @@
 class Solution:
     def longestSubsequence(self, nums: List[int]) -> int:
-        return 0 if all(x == 0 for x in nums) else len(nums) - (reduce(xor, nums, 0) == 0)
+        n=len(nums)
+        if [0]*(n)==nums:
+            return 0
+        x=0
+        for i in nums:
+            x^=i
+        return n if x else n-1
