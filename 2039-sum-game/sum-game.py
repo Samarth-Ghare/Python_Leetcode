@@ -1,13 +1,11 @@
 class Solution:
-    def sumGame(self, A: str) -> bool:
-        s, q = [0, 0], [0, 0]
-        n = len(A)
-
-        for i in range(n):
-            j = i // (n // 2)
-            if A[i] == '?':
-                q[j] += 1
-            else:
-                s[j] += int(A[i])
-
-        return (q[0] + q[1]) & 1 == 1 or (s[0] - s[1]) != (q[1] - q[0]) * 4.5
+    def sumGame(self, num: str) -> bool:
+        n = len(num)
+        half = n // 2
+        q1 = num[:half].count('?')
+        q2 = num[half:].count('?')
+        if (q1 + q2) % 2:
+            return True
+        s1 = sum(int(x) for x in num[:half] if x != '?')
+        s2 = sum(int(x) for x in num[half:] if x != '?')
+        return 2 * (s1 - s2) != (q2 - q1) * 9
