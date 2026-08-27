@@ -1,25 +1,36 @@
+INVALID='{'
 class Solution:
     def lexGreaterPermutation(self, s: str, target: str) -> str:
-        cnt = [0] * 26
-        for i in range(len(s)):
-            cnt[ord(s[i]) - ord("a")] += 1
-            cnt[ord(target[i]) - ord("a")] -= 1
+        c=Counter(s)
+        n=len(s)
+        endi = n
+        for i in range(n):
+            ch = target[i]
+            if ch not in c:
+                endi = i
+                break
+            else:
+                c[ch]-=1
+                if c[ch]==0: c.pop(ch)
+        if endi==n:
+            endi=n-1
+            c[target[endi]]+=1
+        # print(c, endi)
+        for i in range(endi, -1, -1):
+            ch = target[i]
+            x=INVALID
+            for y in c.keys():
+                if y>ch and y<x: x=y
+            if x!=INVALID:
+                res=[target[:i], x]
+                c[x]-=1
+                for y in sorted(c.keys()):
+                    res.append(y*c[y])
+                return ''.join(res)
+            elif i>0:
+                c[target[i-1]]+=1
+        return "" 
+        # print(endi, c)
+        # return s
 
-        t = list(target)
-        for i in range(len(s) - 1,-1,-1):
-            b = ord(t[i]) - ord("a")
-            cnt[b] += 1
-            if min(cnt) < 0:
-                continue
-            for j in range(b+1, 26):
-                if cnt[j] > 0:
-                    cnt[j] -= 1
-                    t[i] = chr(ord("a") + j)
-                    return "".join(t[: i + 1])  + self.getMinString(cnt)
-        return ""
-
-    def getMinString(self, cnt: list[int]) -> str:
-        res = []
-        for i in range(26):
-            res.append(chr(ord("a") + i) * cnt[i])
-        return "".join(res)
+        
