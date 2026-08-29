@@ -1,15 +1,18 @@
 class Solution:
-    def lexicographicallySmallestArray(self, A: List[int], limit: int) -> List[int]:
-        arr = sorted((v, i) for i, v in enumerate(A))
-        i = 0
-        while i < len(A):
-            j = i + 1
-            while j < len(A) and arr[j][0] - arr[j - 1][0] <= limit:
-                j += 1
-                
-            idx = sorted(x[1] for x in arr[i:j])
+    def lexicographicallySmallestArray(self, nums: List[int], limit: int) -> List[int]:
+        groups=[]
+        cur=[]
+        d = {}
+        for x in sorted(nums):
+            if not cur or x-cur[-1] <= limit:
+                cur.append(x)
+            else:
+                groups.append(cur.copy())
+                cur = [x]
+            d[x] = len(groups)
 
-            for k in range(len(idx)):
-                A[idx[k]] = arr[i + k][0]
-            i = j
-        return A
+        groups.append(cur.copy())
+        groups = [l[::-1] for l in groups]
+
+        return [groups[d[x]].pop() for x in nums]
+        
