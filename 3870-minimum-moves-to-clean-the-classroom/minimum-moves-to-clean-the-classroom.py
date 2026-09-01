@@ -1,80 +1,71 @@
 from typing import List
 from collections import deque
 
+
 class Solution:
     def minMoves(self, classroom: List[str], energy: int) -> int:
         m = len(classroom)
         n = len(classroom[0])
-
-        id = [[-1] * n for _ in range(m)]
-
-        k = 0
-        sr = 0
-        sc = 0
-
-        for r in range(m):
-            for c in range(n):
-                if classroom[r][c] == 'S':
-                    sr = r
-                    sc = c
-                elif classroom[r][c] == 'L':
-                    id[r][c] = k
-                    k += 1
-
-        if k == 0:
+        NS = m * n
+        flat = []
+        for row in classroom:
+            flat.extend(row)
+        litbit = [0] * NS
+        nlit = 0
+        start = 0
+        for p in range(NS):
+            c = flat[p]
+            if c == 'S':
+                start = p
+            elif c == 'L':
+                litbit[p] = 1 << nlit
+                nlit += 1
+        if nlit == 0:
             return 0
+        full = (1 << nlit) - 1
+        M = 1 << nlit
 
-        total_mask = (1 << k) - 1
+        blocked = [c == 'X' for c in flat]
+        isR = [c == 'R' for c in flat]
 
-        best = [
-            [
-                [-1] * (1 << k)
-                for _ in range(n)
-            ]
-            for _ in range(m)
-        ]
+        adj = []
+        for p in range(NS):
+            i, j = divmod(p, n)
+            nb = []
+            if i > 0 and not blocked[p - n]:
+                nb.append(p - n)
+            if i < m - 1 and not blocked[p + n]:
+                nb.append(p + n)
+            if j > 0 and not blocked[p - 1]:
+                nb.append(p - 1)
+            if j < n - 1 and not blocked[p + 1]:
+                nb.append(p + 1)
+            adj.append(nb)
 
-        queue = deque()
-
-        best[sr][sc][0] = energy
-        queue.append((sr, sc, 0, energy, 0))
-
-        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-
-        while queue:
-            r, c, mask, e, moves = queue.popleft()
-
-            for dr, dc in directions:
-                nr = r + dr
-                nc = c + dc
-
-                if nr < 0 or nr >= m or nc < 0 or nc >= n:
+        best = [-1] * (NS * M)
+        e0 = energy
+        if isR[start]:
+            e0 = energy
+        best[start * M] = e0
+        dq = deque()
+        dq.append((start, 0, e0))
+        d = 0
+        while dq:
+            for _ in range(len(dq)):
+                pos, mask, e = dq.popleft()
+                if e <= 0:
                     continue
-
-                if classroom[nr][nc] == 'X':
+                if best[pos * M + mask] > e:
                     continue
-
-                ne = e - 1
-
-                if ne < 0:
-                    continue
-
-                nmask = mask
-
-                if classroom[nr][nc] == 'R':
-                    ne = energy
-
-                if classroom[nr][nc] == 'L':
-                    nmask |= 1 << id[nr][nc]
-
-                if nmask == total_mask:
-                    return moves + 1
-
-                if ne <= best[nr][nc][nmask]:
-                    continue
-
-                best[nr][nc][nmask] = ne
-
-                queue.append((nr, nc, nmask, ne, moves + 1))
-
+                ne_base = e - 1
+                for np_ in adj[pos]:
+                    ne = energy if isR[np_] else ne_base
+                    nmask = mask | litbit[np_]
+                    if nmask == full:
+                        return d + 1
+                    idx = np_ * M + nmask
+                    if best[idx] < ne:
+                        best[idx] = ne
+                        dq.append((np_, nmask, ne))
+            d += 1
         return -1
