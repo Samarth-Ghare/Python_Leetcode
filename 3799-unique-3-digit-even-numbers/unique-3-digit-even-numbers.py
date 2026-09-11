@@ -1,10 +1,24 @@
 class Solution:
     def totalNumbers(self, digits: List[int]) -> int:
-        f = Counter(digits)
+        n = len(digits)
+        seen = set()
 
-        res = 0
-        for n in range(100,1000,2):
-            i, r = divmod(n,100)
-            j, k = divmod(r, 10)
-            res += f[i] > 0 and f[j] > (i == j) and f[k] > (i == k) + (j == k)
-        return res
+        for h in range(n):
+            if digits[h] == 0:
+                continue
+
+            for t in range(n):
+                if t == h:
+                    continue
+
+                for u in range(n):
+                    if u == h or u == t:
+                        continue
+
+                    if digits[u] % 2 != 0:
+                        continue
+
+                    num = digits[h] *100 + digits[t] * 10 + digits[u]
+                    seen.add(num)
+
+        return len(seen)
