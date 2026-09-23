@@ -1,28 +1,21 @@
 class Solution:
     def minOperations(self, nums, x):
         n = len(nums)
-        total = sum(nums)
-        target = total - x
-
-        if target < 0:
-            return -1
-
+        target = sum(nums) - x
         if target == 0:
             return n
+        elif target < 0:
+            return -1
 
-        left = 0
-        s = 0
-        longest = -1
-
-        for right in range(n):
-
-            s += nums[right]
-
-            while left <= right and s > target:
-                s -= nums[left]
-                left += 1
-
-            if s == target:
-                longest = max(longest, right - left + 1)
-
-        return -1 if longest == -1 else n - longest
+        res = -1
+        currsum = 0
+        l = 0
+        for r in range(n):
+            currsum += nums[r]
+            while currsum > target:
+                currsum -= nums[l]
+                l += 1
+            
+            if currsum == target:
+                res = max(res, (r - l + 1))    
+        return n - res if res != -1 else -1
