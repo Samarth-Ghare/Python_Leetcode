@@ -1,15 +1,15 @@
 class Solution:
     def maxDepth(self, s: str) -> int:
-        depth = 0
-        r = 0
-        for c in s:
-            if c == ')':
-                depth -= 1
-                continue
+        local_max=0
+        overall_max=0
 
-            if c != '(':
-                continue
-            depth += 1
-            if depth > r:
-                r = depth
-        return r
+        for char in s:
+            if char == '(':
+                local_max+=1
+            elif char == ')':
+                local_max-=1
+            
+
+            overall_max=max(local_max,overall_max)
+        
+        return overall_max
