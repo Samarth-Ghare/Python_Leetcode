@@ -1,7 +1,15 @@
 class Solution:
     def maxDepthAfterSplit(self, seq: str) -> list[int]:
-        res = []
-        for i in range(len(seq)):
-            res.append((i ^ ord(seq[i])) & 1)
-
-        return res
+        depth = 0
+        level = []
+        for c in seq:
+            if c == '(':
+                depth = 1 - depth
+                level.append(depth)
+            elif c == ')':
+                level.append(depth)
+                depth = 1 - depth
+            else:
+                level.append(depth)
+        
+        return level
