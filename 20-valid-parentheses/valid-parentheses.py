@@ -1,21 +1,21 @@
 class Solution:
-    def isValid(self, str: str) -> bool:
-        if len(str) % 2:
-            return False
-
-        S = list(str)
-        i = 0
-
-        for c in S:
-            if (ord(c) & 3) != 1:
-                S[i] = c
-                i += 1
+    def isValid(self, s: str) -> bool:
+        i=0
+        a=[]
+        for i in range(len(s)):
+            if s[i]=='('or s[i]=='['or s[i]=='{':
+                a.append(s[i])
             else:
-                if i == 0:
+                if not a:
                     return False
-                i -= 1
-                if (((ord(c) - ord(S[i])) + 1)>>1) != 1:
+                top=a.pop()
+                if s[i]==')'and top!='(':
                     return False
+                if s[i]==']'and top!='[':
+                    return False
+                if s[i]=='}'and top!='{':
+                    return False
+        return len(a)==0
 
-
-        return i == 0 
+            
+        
