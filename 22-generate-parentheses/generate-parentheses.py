@@ -1,22 +1,16 @@
 class Solution:
-    def fun(self,open,close,n,tmp,res):
-        if open==n and close==n:
-            res.append("".join(tmp))
-            return
-        if open<n:
-            tmp.append('(')
-            self.fun(open+1,close,n,tmp,res)
-            tmp.pop()
-        if close<open:
-            tmp.append(')')
-            self.fun(open,close+1,n,tmp,res)
-            tmp.pop()
-        return 
-
-    def generateParenthesis(self, n: int) -> List[str]:
-        res=[]
-        tmp=[]
-        self.fun(0,0,n,tmp,res)
-        return res
-
-        
+    def generateParenthesis(self, n: int) -> list[str]:
+        def FindVal(l: int, r: int, P: str):
+            if l == n:
+                if r == n:
+                    vals.append(P)
+                else:
+                    FindVal(l, r + 1, P + ')')
+            elif l == r:
+                FindVal(l + 1, r, P + '(')
+            else:
+                FindVal(l + 1, r, P + '(')
+                FindVal(l, r + 1, P + ')')
+        vals = []
+        FindVal(0,0,"")
+        return vals
