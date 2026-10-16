@@ -1,21 +1,47 @@
+from typing import List
+
+
 class Solution:
     def sumCounts(self, nums: List[int]) -> int:
+        MOD = 10 ** 9 + 7
         n = len(nums)
-        cnt, tot = [0] * (n + 1), [0] * (n + 1)  # Fenwick trees over previous-copy positions, stored right to left
-        last, ans = {}, 0
-        for r, x in enumerate(nums):
-            p = last.get(x, -1)
-            c = s = 0
-            i = n - p - 1  # boxes 1..n-p-1 hold the positions > p
-            while i:
-                c += cnt[i]
-                s += tot[i]
-                i -= i & -i
-            ans += (n - r) * ((r - p) ** 2 - 2 * (s - p * c))
-            i = n - p  # insert p; p = -1 lands past the end and is skipped
+        SHIFT = 40
+        MASK = (1 << SHIFT) - 1
+        bit = [0] * (n + 1)
+        last = {}
+        totC = 0
+        totS = 0
+        g = 0
+        ans = 0
+        for j in range(n):
+            v = nums[j]
+            p = last.get(v, -1)
+            if p < 0:
+                R = totS + totC
+            else:
+                i = p + 1
+                q = 0
+                while i > 0:
+                    q += bit[i]
+                    i -= i & (-i)
+                cSuf = totC - (q >> SHIFT)
+                sSuf = totS - (q & MASK)
+                R = sSuf - p * cSuf
+                d = -((1 << SHIFT) + p)
+                i = p + 1
+                while i <= n:
+                    bit[i] += d
+                    i += i & (-i)
+                totC -= 1
+                totS -= p
+            d = (1 << SHIFT) + j
+            i = j + 1
             while i <= n:
-                cnt[i] += 1
-                tot[i] += p
-                i += i & -i
-            last[x] = r
-        return ans % (10**9 + 7)
+                bit[i] += d
+                i += i & (-i)
+            totC += 1
+            totS += j
+            g += 2 * R + (j - p)
+            ans += g
+            last[v] = j
+        return ans % MOD
