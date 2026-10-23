@@ -1,9 +1,10 @@
 class Solution:
     def sortPermutation(self, nums: List[int]) -> int:
-        k = -1
-        for i , x in enumerate(nums):
-            if x != i:
-                k &= x
-                if not k:
-                    return 0
-        return max(k, 0)
+        res = None
+        for i, ele in enumerate(nums):
+            if i != ele: # element not in the sorted position
+                if res is None:
+                    res = ele
+                else:
+                    res &= ele
+        return 0 if res is None else res
