@@ -1,16 +1,16 @@
-mat = [[[1,1],[1,1]],[[0,1],[1,0]]]
-MOD = 10**9+7
 class Solution:
     def uniquePaths(self, grid: List[List[int]]) -> int:
-        n, left = len(grid[0]), 0
-        dp = [0] * n
 
-        dp[0] = 1
-
+        m, n = len(grid), len(grid[0])
+        curRow = [0] * n
+        curRow[0] = 1
         for row in grid:
-            left = 0
-            for j, c in enumerate(row):
-                top = dp[j]
-                dp[j] = (left * mat[c][1][0] + top * mat[c][1][1]) %MOD
-                left = (left * mat[c][0][0] + top * mat[c][0][1]) % MOD
-        return left        
+            prvRow, curRow, prvCel = curRow, [0] * n, 0
+            
+            for idx, p in enumerate(prvRow):
+                if row[idx] == 0:
+                    curRow[idx], prvCel = prvCel + p, prvCel + p
+                else:
+                    curRow[idx], prvCel = prvCel, p
+
+        return curRow[-1] %1_000_000_007
