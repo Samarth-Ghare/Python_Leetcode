@@ -1,17 +1,30 @@
+from typing import List
+
 class Solution:
     def countServers(self, n: int, logs: List[List[int]], x: int, queries: List[int]) -> List[int]:
-        server, time = zip(*sorted(logs, key=itemgetter(1)), [0, inf])  # split the logs
-        cnt = [0] * (n + 1)  # requests per server inside the window [q - x, q]
-        busy = lo = hi = 0  # servers with at least one request in it
-        ans = [0] * len(queries)
-        for i, q in sorted(enumerate(queries), key=itemgetter(1)):
-            while time[hi] <= q:  # requests up to q come in
-                busy += not cnt[server[hi]]
-                cnt[server[hi]] += 1
-                hi += 1
-            while time[lo] < q - x:  # requests before q - x go out
-                cnt[server[lo]] -= 1
-                busy -= not cnt[server[lo]]
-                lo += 1
-            ans[i] = n - busy
-        return ans
+        logs.sort(key=lambda log: log[1])
+        ordered_queries = sorted(enumerate(queries), key=lambda item: item[1])
+        counts = [0] * (n + 1)
+        active = 0
+        left = right = 0
+        answer = [0] * len(queries)
+
+        for index, end in ordered_queries:
+            while right < len(logs) and logs[right][1] <= end:
+                server = logs[right][0]
+                if counts[server] == 0:
+                    active += 1
+                counts[server] += 1
+                right += 1
+
+            start = end - x
+            while left < right and logs[left][1] < start:
+                server = logs[left][0]
+                counts[server] -= 1
+                if counts[server] == 0:
+                    active -= 1
+                left += 1
+
+            answer[index] = n - active
+
+        return answer
