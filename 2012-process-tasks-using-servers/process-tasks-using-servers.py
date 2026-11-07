@@ -1,25 +1,21 @@
 class Solution:
-    def assignTasks(self, servers: list[int], tasks: list[int]) -> list[int]:
-        n, m = len(servers), len(tasks)
-        ans = []
-        heapsmol = []
-        heaplarge = []
+    def assignTasks(self, servers: List[int], tasks: List[int]) -> List[int]:
+        res, unavailable = [], []
+        available = [(weight, id) for id, weight in enumerate(servers)]
+        heapify(available)
 
-        for idx, weight in enumerate(servers):
-            heappush(heapsmol, (weight, idx, 0)) #server weight, index, finish time
+        for time, task in enumerate(tasks):
+            while unavailable and unavailable[0][0] <= time:
+                _, weight, id = heappop(unavailable)
+                heappush(available, (weight, id))
 
-        for i, task in enumerate(tasks):
-            while heaplarge and heaplarge[0][0] <= i:
-                time, weight, index = heappop(heaplarge) 
-                heappush(heapsmol, (weight, index, time))
-            
-            if heapsmol:
-                weight, index, time = heappop(heapsmol)
-                ans.append(index)
-                heappush(heaplarge, (i + task, weight, index))
+            if len(available) > 0:
+                weight, id = heappop(available)
+                heappush(unavailable, (time + task, weight, id))
+                res.append(id)
             else:
-                time, weight, index = heappop(heaplarge)
-                ans.append(index)
-                heappush(heaplarge, (time + task, weight, index))
-        
-        return ans
+                finishTime, weight, id = heappop(unavailable)
+                heappush(unavailable, (finishTime + task, weight, id))
+                res.append(id)
+
+        return res
