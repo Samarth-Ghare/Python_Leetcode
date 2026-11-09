@@ -1,6 +1,6 @@
-# Write your MySQL query statement below
-update salary set sex = 
-case sex
-    when 'm' then 'f'
-    else 'm'
+-- Write your PostgreSQL query statement below
+UPDATE Salary
+SET sex = CASE sex
+    WHEN 'm' THEN 'f'
+    ELSE 'm'
 END;
