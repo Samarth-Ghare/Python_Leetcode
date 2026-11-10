@@ -1,8 +1,11 @@
-class Solution:
-    def climbStairs(self, n: int, costs: List[int]) -> int:
-        costs = [0] + costs
-        a, b, c = costs[n], inf, inf
-        for i in reversed(range(n)):
-            a, b, c = costs[i] + min(a+1, b+4, c+9), a, b
-        return a 
-            
+class Solution(object):
+    def climbStairs(self, n, costs):
+        """
+        :type n: int
+        :type costs: List[int]
+        :rtype: int
+        """
+        f0 = f1 =f2 = 0
+        for c in costs:
+            f0, f1, f2 = f1, f2, min(f0+9, f1+4, f2+1) + c
+        return f2
