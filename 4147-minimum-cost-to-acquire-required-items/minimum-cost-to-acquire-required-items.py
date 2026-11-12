@@ -1,7 +1,6 @@
 class Solution:
     def minimumCost(self, cost1: int, cost2: int, costBoth: int, need1: int, need2: int) -> int:
-        def bound(need_a: int, cost_a: int, need_b:int, cost_b: int) -> int:
-            p_a = min(cost_a, costBoth)
-            p_b = min(cost_b, costBoth - p_a)
-            return need_a * p_a + need_b * p_b
-        return max(bound(need1, cost1, need2, cost2), bound(need2, cost2, need1, cost1))
+        both = min(need1, need2)
+        return(both * min(cost1+cost2, costBoth)
+                + (need1 - both)*min(cost1, costBoth)
+                + (need2 - both) * min(cost2, costBoth))
