@@ -1,23 +1,54 @@
 class Solution:
-    def minimumChanges(self, s: str, k: int) -> int:
-        n = len(s)
-        divisors = [[] for _ in range(n+1)]
-        for d in range(1,n):
-            for length in range(2*d, n+1, d):
-                divisors[length].append(d)
+  def minimumChanges(self, s: str, k: int) -> int:
+    n = len(s)
+    
+    # Calculates the dynamic programming state.
+    # `start` is the suffix start, and `k1` is the number of parts
+    # to split it into.
+    @functools.cache
+    def DP(start, k1):
+      # If there is only 1 part, there is no splitting (pivot),
+      # so the answer is the number of changes to make the whole
+      # suffix a semi-palindrome.
+      if k1 == 1:
+        return toSemiPalindrome(start, n)
+      
+      # Try every way to split the suffix into a part followed by
+      # another suffix.
+      return min(
+        toSemiPalindrome(start, pivot) + DP(pivot, k1 - 1)
+        # There is an implicit rule that no part must be shorter than 2.
+        # We use only such pivots that won't violate the rule.
+        for pivot in range(start + 2, n - (k1 - 1) * 2 + 1)
+      )
+    
+    # Counts the minimum number of changes to make an `s` substring
+    # be a semi-palindrome.
+    @functools.cache
+    def toSemiPalindrome(start, end):
+      minChanges = math.inf
+      length = end - start
+      
+      # Try each valid `d`. Notice that `length` itself is not a valid `d`,
+      # because otherwise any string would be a semi-palindrome
+      for d in range(1, length):
+        if length % d != 0:
+          continue
 
-        @cache
-        def peel(i:int, j:int, d:int) -> int:
-            if j-i <= d:
-                return 0
-            return sum(map(ne, s[i:i+d], s[j-d:j])) + peel(i+d, j-d, d)
+        changeCount = 0
+        subLength = length // d # Length of the palindrome for each offset
 
-        @cache
-        def cost(i:int, j:int) -> int:
-            return min(peel(i, j, d) for d in divisors[j-i])
-        
-        best = {0:0}
-        for pieces in range(1, k):
-            room = range(2*pieces, n-2 * (k-pieces)+1)
-            best = {j: min(best[i] + cost(i, j) for i in best if i <= j - 2) for j in room}
-        return min(best[i] + cost(i, n) for i in best)
+        for offset in range(d):
+          # `i` is the distance from the edges of the palindrome
+          for i in range(subLength // 2):
+            if (
+              s[start + offset + d * i] !=
+              s[start + offset + d * (subLength - i - 1)]
+            ):
+              changeCount += 1
+
+        minChanges = min(minChanges, changeCount)
+
+      return minChanges
+
+    return DP(0, k)
