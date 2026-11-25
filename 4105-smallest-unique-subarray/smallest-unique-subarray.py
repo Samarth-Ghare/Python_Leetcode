@@ -1,12 +1,45 @@
 class Solution:
-    def smallestUniqueSubarray(self, nums: List[int]) -> int:
-        n = len(nums)
-        names = [nums]
-        for k in range(n.bit_length() -1):
-            ids = {}
-            names.append([ids.setdefault(pair, len(ids)) for pair in zip(names[k], names[k][2**k:])])
-        def found(length):
-            k = length.bit_length() - 1
-            return 1 in Counter(zip(names[k], names[k][length - 2 ** k:])).values()
+    def smallestUniqueSubarray(self, nums: list[int]) -> int:
+        nxt, link, length = [{}], [-1], [0]
+        last = 0
 
-        return bisect_left(range(1,n), True, key=found)+1
+        for x in nums:
+            cur = len(nxt)
+            nxt.append({})
+            link.append(0)
+            length.append(length[last] + 1)
+
+            p = last
+            while p >= 0 and x not in nxt[p]:
+                nxt[p][x] = cur
+                p = link[p]
+
+            if p >= 0:
+                q = nxt[p][x]
+
+                if length[p] + 1 == length[q]:
+                    link[cur] = q
+                else:
+                    clone = len(nxt)
+                    nxt.append(nxt[q].copy())
+                    link.append(link[q])
+                    length.append(length[p] + 1)
+
+                    while p >= 0 and nxt[p].get(x) == q:
+                        nxt[p][x] = clone
+                        p = link[p]
+
+                    link[q] = link[cur] = clone
+
+            last = cur
+
+        leaf = [True] * len(nxt)
+
+        for v in range(1, len(nxt)):
+            leaf[link[v]] = False
+
+        return min(
+            length[link[v]] + 1
+            for v in range(1, len(nxt))
+            if leaf[v]
+        )
